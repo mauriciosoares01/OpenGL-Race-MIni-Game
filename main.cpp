@@ -1,15 +1,5 @@
 /**************************
- *
- * MAZE GAME
- * Checkout on github: https://github.com/mauriciosoares01/Open_GL-Maze-Game
- * Author: Maurício Silva Soares
- * Using OpenGL
- * Goal:
- *	Move trough the maze until the end, without touch the walls
- * Controls:
- *	Directional keys for movement
- *	Left mouse buttom for color change
- *
+
  **************************
 */
 
@@ -19,6 +9,8 @@
 
 
 float pX=44,pY=17;	// initial player's position
+float step=0.5;
+bool state=0;		// players crash state
 
 //Configure the window and the viewport
 void Init(void){
@@ -67,12 +59,12 @@ void Draw(void){
 		glVertex3f(pX, pY+4, 0);
 	glEnd();
 	
-	glBegin(GL_POLYGON);
-		glVertex3f(pX+4.3, pY, 0);
-		glVertex3f(pX+8.3, pY, 0);
-		glVertex3f(pX+8.3, pY+4, 0);
-		glVertex3f(pX+4.3, pY+4, 0);
-	glEnd();
+//	glBegin(GL_POLYGON);
+//		glVertex3f(pX+4.3, pY, 0);
+//		glVertex3f(pX+8.3, pY, 0);
+//		glVertex3f(pX+8.3, pY+4, 0);
+//		glVertex3f(pX+4.3, pY+4, 0);
+//	glEnd();
 	
 	glBegin(GL_POLYGON);
 		glVertex3f(pX+8.6, pY, 0);
@@ -146,9 +138,100 @@ void Draw(void){
 		glVertex3f(95, 90, 0);
 		glVertex3f(80, 90, 0);
 	glEnd();
+	
+// shadows and details
+	glColor3f(0.8,0.4,0.4);
+	
+	glBegin(GL_POLYGON);
+		glVertex3f(80, 17, 0);
+		glVertex3f(85, 14, 0);
+		glVertex3f(85, 86, 0);
+		glVertex3f(80, 83, 0);
+	glEnd();
 
+	glBegin(GL_POLYGON);
+		glVertex3f(15, 14, 0);
+		glVertex3f(85, 14, 0);
+		glVertex3f(82, 17, 0);
+		glVertex3f(20, 17, 0);
+	glEnd();
+	
+	glBegin(GL_POLYGON);
+		glVertex3f(5, 0, 0);
+		glVertex3f(7, 0, 0);
+		glVertex3f(7, 100, 0);
+		glVertex3f(5, 100, 0);
+	glEnd();	
+
+	glColor3f(0.8,0.0,0.0);
+	
+	glBegin(GL_POLYGON);
+		glVertex3f(15, 14, 0);
+		glVertex3f(20, 17, 0);
+		glVertex3f(20, 83, 0);
+		glVertex3f(15, 86, 0);
+	glEnd();
+	
+	glBegin(GL_POLYGON);
+		glVertex3f(15, 86, 0);
+		glVertex3f(20, 83, 0);
+		glVertex3f(80, 83, 0);
+		glVertex3f(85, 86, 0);
+	glEnd();
+	
+	glBegin(GL_POLYGON);
+		glVertex3f(93, 0, 0);
+		glVertex3f(95, 0, 0);
+		glVertex3f(95, 100, 0);
+		glVertex3f(93, 100, 0);
+	glEnd();
+	
+	glColor3f(1,1,0.3);
+	glLineWidth(4);
+	
+	glBegin(GL_LINES);
+		glVertex2f(87, 12);
+		glVertex2f(87, 88);
+		glVertex2f(87.2, 88);
+		glVertex2f(12.8, 88);
+		glVertex2f(13, 88);
+		glVertex2f(13, 12);
+		glVertex2f(12.8, 12);
+		glVertex2f(87.2, 12);
+	glEnd();
+	
 	
 	glFlush();
+}
+
+void KeyboardManagement(int key, int mouseX, int mouseY){
+	
+	float x=pX,y=pY;
+	
+	if(state!=1){
+		// add or subtract the step for wich directional key pressed
+		switch(key){
+			case GLUT_KEY_RIGHT:
+				x += step;
+				break;
+			case GLUT_KEY_LEFT:
+				x -= step;
+				break;
+			case GLUT_KEY_DOWN:
+
+				break;
+			case GLUT_KEY_UP:
+				
+				break;
+			default:
+				break;	
+		}
+	}
+	
+	pX = x;
+	pY = y;
+	glutPostRedisplay();
+	
 }
 
 int main(void){
@@ -160,6 +243,7 @@ int main(void){
 	glutCreateWindow("Mini Race Game");
 	Init();
 	glutDisplayFunc(Draw);
+	glutSpecialFunc(KeyboardManagement);
 
 	glutMainLoop();
 }
