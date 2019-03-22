@@ -8,9 +8,10 @@
 #include <iostream>
 
 
-float pX=44,pY=17;	// initial player's position
-float step=0.5;
-bool state=0;		// players crash state
+float pX=29,pY=17;		// initial player's position
+float wX=27, wY=17;		// initial walls position	
+float step=0.5;	
+bool state=0;			// players crash state
 
 //Configure the window and the viewport
 void Init(void){
@@ -49,6 +50,21 @@ void Draw(void){
 		glVertex3f(26, 100, 0);
 		glVertex3f(25, 100, 0);
 	glEnd();
+	
+// walls
+	glLineWidth(5);
+
+	int i=0;
+	for (i=0;i<=11;i++){
+		glBegin(GL_LINES);
+			glVertex3f(wX,wY, 0);
+			glVertex3f(wX,wY+3, 0);
+			glVertex3f(wX+32,wY,0);
+			glVertex3f(wX+32,wY+3,0);
+		glEnd();
+		
+		wY+=6;	
+	}
 
 // player
 
@@ -58,13 +74,6 @@ void Draw(void){
 		glVertex3f(pX+4, pY+4, 0);
 		glVertex3f(pX, pY+4, 0);
 	glEnd();
-	
-//	glBegin(GL_POLYGON);
-//		glVertex3f(pX+4.3, pY, 0);
-//		glVertex3f(pX+8.3, pY, 0);
-//		glVertex3f(pX+8.3, pY+4, 0);
-//		glVertex3f(pX+4.3, pY+4, 0);
-//	glEnd();
 	
 	glBegin(GL_POLYGON);
 		glVertex3f(pX+8.6, pY, 0);
@@ -206,16 +215,14 @@ void Draw(void){
 
 void KeyboardManagement(int key, int mouseX, int mouseY){
 	
-	float x=pX,y=pY;
-	
 	if(state!=1){
-		// add or subtract the step for wich directional key pressed
+		// change player side when a directional is key pressed
 		switch(key){
 			case GLUT_KEY_RIGHT:
-				x += step;
+				pX = 44;
 				break;
 			case GLUT_KEY_LEFT:
-				x -= step;
+				pX = 29;
 				break;
 			case GLUT_KEY_DOWN:
 
@@ -227,9 +234,7 @@ void KeyboardManagement(int key, int mouseX, int mouseY){
 				break;	
 		}
 	}
-	
-	pX = x;
-	pY = y;
+
 	glutPostRedisplay();
 	
 }
