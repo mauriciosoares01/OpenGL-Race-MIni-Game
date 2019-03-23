@@ -4,12 +4,13 @@
 */
 
 #include <stdlib.h>
-#include <gl/glut.h>
+#include <GL/glut.h>
 #include <iostream>
 
 
-float pX=29,pY=17;		// initial player's position
+float pX=32,pY=17;		// initial player's position
 float wX=27, wY=17;		// initial walls position	
+float tWY = 0; 			// initial translation of wall
 float step=0.5;	
 bool state=0;			// players crash state
 
@@ -20,8 +21,66 @@ void Init(void){
 	gluOrtho2D(0,100.0,0.0,100.0);
 }
 
+void DrawWalls() {
+	// walls
+	// glLineWidth(5);
+	glPushMatrix();
+	glTranslatef(0, tWY, 0);
+	wY = 17;
+	int i=0;
+	for (i=0;i<=4;i++){
+		glBegin(GL_POLYGON);
+			glVertex3f(wX, wY, 0);
+			glVertex3f(wX+4, wY, 0);
+			glVertex3f(wX+4, wY+4, 0);
+			glVertex3f(wX, wY+4, 0);
+		glEnd();
+		glBegin(GL_POLYGON);
+			glVertex3f(wX+34, wY, 0);
+			glVertex3f(wX+38, wY, 0);
+			glVertex3f(wX+38, wY+4, 0);
+			glVertex3f(wX+34, wY+4, 0);
+		glEnd();
+		glBegin(GL_POLYGON);
+			glVertex3f(wX, wY+5, 0);
+			glVertex3f(wX+4, wY+5, 0);
+			glVertex3f(wX+4, wY+9, 0);
+			glVertex3f(wX, wY+9, 0);
+		glEnd();
+		glBegin(GL_POLYGON);
+			glVertex3f(wX+34, wY+5, 0);
+			glVertex3f(wX+38, wY+5, 0);
+			glVertex3f(wX+38, wY+9, 0);
+			glVertex3f(wX+34, wY+9, 0);
+		glEnd();
+		glBegin(GL_POLYGON);
+			glVertex3f(wX, wY+10, 0);
+			glVertex3f(wX+4, wY+10, 0);
+			glVertex3f(wX+4, wY+14, 0);
+			glVertex3f(wX, wY+14, 0);
+		glEnd();
+		glBegin(GL_POLYGON);
+			glVertex3f(wX+34, wY+10, 0);
+			glVertex3f(wX+38, wY+10, 0);
+			glVertex3f(wX+38, wY+14, 0);
+			glVertex3f(wX+34, wY+14, 0);
+		glEnd();
+		// glBegin(GL_LINES);
+		// 	glVertex3f(wX,wY, 0);
+		// 	glVertex3f(wX,wY+3, 0);
+		// 	glVertex3f(wX+32,wY,0);
+		// 	glVertex3f(wX+32,wY+3,0);
+		// glEnd();
+		
+		wY+=20;	
+	}
+	glPopMatrix();
+}
+
 //Draw the player and the console
 void Draw(void){
+	glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	glColor3f(0.5,0.7,0.6);
@@ -38,10 +97,10 @@ void Draw(void){
 	glColor3f(0.15,0.15,0.15);
 	
 	glBegin(GL_POLYGON);
-		glVertex3f(60, 0, 0);
-		glVertex3f(61, 0, 0);
-		glVertex3f(61, 100, 0);
-		glVertex3f(60, 100, 0);
+		glVertex3f(66, 0, 0);
+		glVertex3f(67, 0, 0);
+		glVertex3f(67, 100, 0);
+		glVertex3f(66, 100, 0);
 	glEnd();
 
 	glBegin(GL_POLYGON);
@@ -51,20 +110,7 @@ void Draw(void){
 		glVertex3f(25, 100, 0);
 	glEnd();
 	
-// walls
-	glLineWidth(5);
-
-	int i=0;
-	for (i=0;i<=11;i++){
-		glBegin(GL_LINES);
-			glVertex3f(wX,wY, 0);
-			glVertex3f(wX,wY+3, 0);
-			glVertex3f(wX+32,wY,0);
-			glVertex3f(wX+32,wY+3,0);
-		glEnd();
-		
-		wY+=6;	
-	}
+	DrawWalls();
 
 // player
 
@@ -213,16 +259,27 @@ void Draw(void){
 	glFlush();
 }
 
+void Anima(int value)
+{
+	
+	tWY = tWY <= -20 ? -0.5 : tWY-step;
+	
+
+	// Redesenha a casinha em outra posição
+	glutPostRedisplay();
+	glutTimerFunc(100,Anima, 1);
+}
+
 void KeyboardManagement(int key, int mouseX, int mouseY){
 	
 	if(state!=1){
 		// change player side when a directional is key pressed
 		switch(key){
 			case GLUT_KEY_RIGHT:
-				pX = 44;
+				pX = 47;
 				break;
 			case GLUT_KEY_LEFT:
-				pX = 29;
+				pX = 32;
 				break;
 			case GLUT_KEY_DOWN:
 
@@ -239,9 +296,10 @@ void KeyboardManagement(int key, int mouseX, int mouseY){
 	
 }
 
-int main(void){
+int main(int argc, char **argv){
 	
 	//Game window
+	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
 	glutInitWindowSize(650,650);
     glutInitWindowPosition(100,50);
@@ -249,7 +307,7 @@ int main(void){
 	Init();
 	glutDisplayFunc(Draw);
 	glutSpecialFunc(KeyboardManagement);
-
+glutTimerFunc(150, Anima, 1);
 	glutMainLoop();
 }
 
