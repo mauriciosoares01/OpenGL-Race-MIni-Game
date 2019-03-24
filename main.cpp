@@ -26,9 +26,35 @@ int counter = 0; 		// Counter to change speed
 
 //Configure the window and the viewport
 void Init(void){
+	glEnable(GL_COLOR_MATERIAL);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	// glEnable(GL_DEPTH_TEST);
+	glShadeModel(GL_SMOOTH);
 	glClearColor(1,1,1,1.0f);
 	glMatrixMode(GL_PROJECTION);
 	gluOrtho2D(0,100.0,0.0,100.0);
+}
+
+void lightning() {
+	GLfloat luzAmbiente[4]={0.2,0.2,0.2,1.0};
+	GLfloat luzDifusa[4]={0.7,0.7,0.7,1.0}; // "cor"
+	GLfloat luzEspecular[4]={0.2, 0.2, 0.2, 0.2};// "brilho"
+	GLfloat posicaoLuz[4]={40.0, 60.0, 50.0, 1};
+	// Capacidade de brilho do material
+	GLfloat especularidade[4]={1.0,1.0,1.0,1.0};
+	GLint especMaterial = 60;
+	// Define a refletância do material
+	glMaterialfv(GL_FRONT,GL_SPECULAR, especularidade);
+	// Define a concentração do brilho
+	glMateriali(GL_FRONT,GL_SHININESS,especMaterial);
+	// Ativa o uso da luz ambiente
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
+	// Define os parâmetros da luz de número 0
+	glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa );
+	glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular );
+	glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz ); 
 }
 
 void DrawWalls() {
@@ -148,7 +174,7 @@ void Draw(void){
 	glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 	glClear(GL_COLOR_BUFFER_BIT);
-	
+	lightning();
 	glColor3f(0.5,0.7,0.6);
 
 // background
@@ -332,7 +358,6 @@ void Anima(int value){
 		if(tAY[i] <= -85){
 			int al = rand()%2;
 			aX[i] = al?32:47;
-			printf("al: %i\n", al);
 			tAY[i] = 40-step;
 		} else 
 			tAY[i] = tAY[i]-step;
@@ -365,8 +390,25 @@ void checkCollision(){
 }
 
 void KeyboardReleaseManagement(unsigned char key, int mouseX, int mouseY){
-	printf("HEY JUDE\n");
-	if(key == GLUT_KEY_UP) step = actualStep;
+	if(key == ' ') step = actualStep;
+}
+void KeyboardSpaceManagement(unsigned char key, int mouseX, int mouseY){
+	switch(key){
+			case ' ':
+				step = 10;
+				break;
+			case 'a':
+				pX = 32;
+				break;
+			case 27:
+				exit(0);
+				break;
+			case 'd':
+				pX = 47;
+				break;
+			default:
+				break;	
+		}
 }
 
 
@@ -386,7 +428,7 @@ void KeyboardManagement(int key, int mouseX, int mouseY){
 
 				break;
 			case GLUT_KEY_UP:
-				step = 10;
+				
 				break;
 			default:
 				break;	
@@ -408,6 +450,7 @@ int main(int argc, char **argv){
 	Init();
 	glutDisplayFunc(Draw);
 	glutSpecialFunc(KeyboardManagement);
+	glutKeyboardFunc(KeyboardSpaceManagement);
 	glutKeyboardUpFunc(KeyboardReleaseManagement);
 	glutTimerFunc(150, Anima, 1);
 
