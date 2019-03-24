@@ -31,20 +31,23 @@ int hiScore;
 FILE *hiScoreFile; 	//FILE TO HIGH SCORE
 int explosionCounter = 0;
 float c1=0.8, c2=0.15, c3=0.15, c4=0.8, c5=0.4, c6=0.4, c7=0.8, c8=0.0, c9=0.0;		// initial console colors
+bool pause = false;
 
 void restart(int choice){
-	pX=32,pY=17;
-	wX=27, wY=17;
-	aX[0]=32, aX[1]=32, aX[2]=47, aY[0]=86, aY[1]=86, aY[2]=86;
-	tWY = 0;
-	tAY[0]=0, tAY[1]=40, tAY[2]=80;
-	step=0.5;	
-	actualStep = 0.5;
-	state=false;
-	counter = 0;
-	score = 0;
-	explosionCounter = 0;
-	c1=0.8, c2=0.15, c3=0.15, c4=0.8, c5=0.4, c6=0.4, c7=0.8, c8=0.0, c9=0.0;
+	if(choice == 0){
+		pX=32,pY=17;
+		wX=27, wY=17;
+		aX[0]=32, aX[1]=32, aX[2]=47, aY[0]=86, aY[1]=86, aY[2]=86;
+		tWY = 0;
+		tAY[0]=0, tAY[1]=40, tAY[2]=80;
+		step=0.5;	
+		actualStep = 0.5;
+		state=false;
+		counter = 0;
+		score = 0;
+		explosionCounter = 0;
+		c1=0.8, c2=0.15, c3=0.15, c4=0.8, c5=0.4, c6=0.4, c7=0.8, c8=0.0, c9=0.0;
+	} else if(choice == 1) exit(0);
 	
 	glutPostRedisplay();
 }
@@ -87,6 +90,7 @@ void NewMenu(){
 
 	submenu2=glutCreateMenu(restart);
 	glutAddMenuEntry("Restart",0);
+	glutAddMenuEntry("Quit",1);
 
 	menu=glutCreateMenu(MainMenu);
 	glutAddSubMenu("Console color",submenu1);
@@ -111,10 +115,10 @@ void Init(void){
 }
 
 //Text renderer
-void print_text(const char *text, float x, float y){
+void print_text(const char *text, float x, float y, bool big){
 	glRasterPos2f(x , y);
 	for(int i = 0; i < strlen(text); i++){
-		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, text[i]);
+		glutBitmapCharacter(big?GLUT_BITMAP_TIMES_ROMAN_24:GLUT_BITMAP_9_BY_15, text[i]);
 	}
 }
 
@@ -542,20 +546,38 @@ void Draw(void){
 
 	//TEXTS
 	glColor3f(0.15,0.15,0.15);
-	print_text("HI-SCORE: ", 67.5, 78);
+	print_text("HI-SCORE: ", 67.5, 78, false);
 	char hiScoreStr[10];
 	snprintf(hiScoreStr, sizeof(hiScoreStr), "%d", hiScore);
-	print_text(hiScoreStr, 67.5, 76);
-	print_text("SCORE: ", 67.5, 70);
+	print_text(hiScoreStr, 67.5, 76, false);
+	print_text("SCORE: ", 67.5, 70, false);
 	char scoreStr[10];
 	snprintf(scoreStr, sizeof(scoreStr), "%d", score);
-	print_text(scoreStr, 67.5, 68);
+	print_text(scoreStr, 67.5, 68, false);
 
-	print_text("SPEED: ", 67.5, 60);
+	print_text("SPEED: ", 67.5, 60, false);
 	char speed[10];
 	snprintf(speed, sizeof(speed), "%.1lf", (actualStep*10)/5);
-	print_text(speed, 67.5, 58);
+	print_text(speed, 67.5, 58, false);
+	if(pause)
+		print_text("PAUSE", 40, 47, true);
 	
+	print_text("ARROWS", 69, 52, false);
+	print_text("OR", 72, 50, false);
+	print_text("\"A\"/\"D\"", 68, 48, false);
+	print_text("MOVE", 70, 44, false);
+
+	print_text("SPACEBAR", 68, 40, false);
+	print_text("RUN", 72, 38, false);
+
+	print_text("ESC", 72, 34, false);
+	print_text("PAUSE", 70, 32, false);
+	
+
+	print_text("MOUSE", 70, 28, false);
+	print_text("RIGHT", 70, 26, false);
+	print_text("BUTTON", 69.5, 24, false);
+	print_text("TO MENU", 68.5, 22, false);
 
 	
 	glFlush();
@@ -575,42 +597,44 @@ void checkCollision(){
 }
 
 void Anima(int value){
-	if(!state){
-		tWY = tWY <= -20 ? -step : tWY-step;
-		for(int i = 0; i< 3; i++){
-			if(tAY[i] <= -85){
-				int al = rand()%2;
-				aX[i] = al?32:47;
-				tAY[i] += 125-step;
-			} else 
-				tAY[i] = tAY[i]-step;
-		}
-			
-		if(counter++> 50){
-			counter = 0;
-			actualStep += 0.2;
-		}
-		score += 2*step;
-		checkCollision();
-	} else {
-		if(explosionCounter++ >= 15){
-			explosionCounter = 0;
-			state = false;
-			score =0;
-			hiScoreFile = fopen("hiscore", "r");
-			fscanf(hiScoreFile, "%d", &hiScore);
-			tWY = 0;
-			tAY[0] =0;
-			tAY[1] = 40;
-			tAY[2] = 80;
-			counter =0;
-			actualStep = 0.5;
-			explosionCounter = 0;
-			
-		}
-		if(score > hiScore){
-			hiScoreFile = fopen("hiscore", "w");
-			fprintf(hiScoreFile, "%d", score);
+	if(!pause){
+		if(!state){
+			tWY = tWY <= -20 ? -step : tWY-step;
+			for(int i = 0; i< 3; i++){
+				if(tAY[i] <= -85){
+					int al = rand()%2;
+					aX[i] = al?32:47;
+					tAY[i] += 125-step;
+				} else 
+					tAY[i] = tAY[i]-step;
+			}
+				
+			if(counter++> 50){
+				counter = 0;
+				actualStep += 0.2;
+			}
+			score += 2*step;
+			checkCollision();
+		} else {
+			if(explosionCounter++ >= 15){
+				explosionCounter = 0;
+				state = false;
+				score =0;
+				hiScoreFile = fopen("hiscore", "r");
+				fscanf(hiScoreFile, "%d", &hiScore);
+				tWY = 0;
+				tAY[0] =0;
+				tAY[1] = 40;
+				tAY[2] = 80;
+				counter =0;
+				actualStep = 0.5;
+				explosionCounter = 0;
+				
+			}
+			if(score > hiScore){
+				hiScoreFile = fopen("hiscore", "w");
+				fprintf(hiScoreFile, "%d", score);
+			}
 		}
 	}
 	// Redesenha a casinha em outra posição
@@ -631,7 +655,7 @@ void KeyboardSpaceManagement(unsigned char key, int mouseX, int mouseY){
 				pX = 32;
 				break;
 			case 27:
-				exit(0);
+				pause = !pause;
 				break;
 			case 'd':
 				pX = 47;
