@@ -376,43 +376,44 @@ void Draw(void){
 	glFlush();
 }
 
-void Anima(int value){
-	
-	tWY = tWY <= -20 ? -step : tWY-step;
-	for(int i = 0; i< 3; i++){
-		if(tAY[i] <= -85){
-			int al = rand()%2;
-			aX[i] = al?32:47;
-			tAY[i] = 40-step;
-		} else 
-			tAY[i] = tAY[i]-step;
-	}
-		
-	if(counter++> 50){
-		counter = 0;
-		actualStep += 0.2;
-	}
-	score += 2*step;
-	// Redesenha a casinha em outra posição
-	glutPostRedisplay();
-	glutTimerFunc(100,Anima, 1);
-}
-
 // verifies the collision	checkCollision(playerPosX,enemyVectorX,enemyVectorY)
 void checkCollision(){
 	
 	int i=0;
 	for (i=0;i<3;i++){
-		if(((aY[i]-tAY[i]) < 17) && (aX[i]==pX)){
+		if(((aY[i]+tAY[i]) <= pY+17) && (aX[i]==pX)){
 			state = true;
-			printf("bateu\n");
-		}else{
-			printf("vida que segue\n");
-			state = false;
+			break;
 		}
 	}
 
 }
+
+void Anima(int value){
+	if(!state){
+		tWY = tWY <= -20 ? -step : tWY-step;
+		for(int i = 0; i< 3; i++){
+			if(tAY[i] <= -85){
+				int al = rand()%2;
+				aX[i] = al?32:47;
+				tAY[i] = 40-step;
+			} else 
+				tAY[i] = tAY[i]-step;
+		}
+			
+		if(counter++> 50){
+			counter = 0;
+			actualStep += 0.2;
+		}
+		score += 2*step;
+		checkCollision();
+	}
+	// Redesenha a casinha em outra posição
+	glutPostRedisplay();
+	glutTimerFunc(100,Anima, 1);
+}
+
+
 
 void KeyboardReleaseManagement(unsigned char key, int mouseX, int mouseY){
 	if(key == ' ') step = actualStep;
