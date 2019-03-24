@@ -30,6 +30,7 @@ int score = 0;			//initial score
 int hiScore;
 FILE *hiScoreFile; 	//FILE TO HIGH SCORE
 int explosionCounter = 0;
+float c1=0.8, c2=0.15, c3=0.15, c4=0.8, c5=0.4, c6=0.4, c7=0.8, c8=0.0, c9=0.0;		// initial console colors
 
 //Configure the window and the viewport
 void Init(void){
@@ -43,6 +44,57 @@ void Init(void){
 	glClearColor(1,1,1,1.0f);
 	glMatrixMode(GL_PROJECTION);
 	gluOrtho2D(0,100.0,0.0,100.0);
+}
+
+// change the console color
+void consoleColor(int choice){
+	switch(choice){
+		case 0:
+			c1=0.8, c2=0.15, c3=0.15, c4=0.8, c5=0.4, c6=0.4, c7=0.8, c8=0.0, c9=0.0;
+			break;
+		case 1:
+			c1=0.15, c2=0.8, c3=0.15, c4=0.4, c5=0.8, c6=0.4, c7=0.0, c8=0.8, c9=0.0;	
+			break;
+		case 2:
+			c1=0.15, c2=0.15, c3=0.8, c4=0.4, c5=0.4, c6=0.8, c7=0.0, c8=0.0, c9=0.8;
+			break;
+		case 3:
+		
+			break;
+	}
+	
+	glutPostRedisplay();
+}
+
+// just to initialize the menu
+void MainMenu(int choice){}
+
+// create the menu and submenus for color change
+void NewMenu(){
+	
+	int menu, submenu1, submenu2;
+	
+	submenu1=glutCreateMenu(consoleColor);
+	glutAddMenuEntry("Red",0);
+    glutAddMenuEntry("Green",1);
+    glutAddMenuEntry("Blue",2);
+    glutAddMenuEntry("Black",3);
+
+	menu=glutCreateMenu(MainMenu);
+	glutAddSubMenu("Console color",submenu1);
+	glutAddSubMenu("Restart",submenu2);
+	
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
+}
+
+// calls a menu when left button is clicked
+void MouseManagement(int button, int state, int x, int y){
+	if(button == GLUT_LEFT_BUTTON){
+		if(state == GLUT_DOWN)
+			NewMenu();
+	}
+	
+	glutPostRedisplay();
 }
 
 //Text renderer
@@ -389,7 +441,7 @@ void Draw(void){
 		DrawExplosion((explosionCounter%3)+1);
 	
 //	borders
-	glColor3f(0.8,0.15,0.15);
+	glColor3f(c1,c2,c3);
 	
 	glBegin(GL_POLYGON);
 		glVertex3f(5, 0, 0);
@@ -420,7 +472,7 @@ void Draw(void){
 	glEnd();
 	
 // shadows and details
-	glColor3f(0.8,0.4,0.4);
+	glColor3f(c4,c5,c6);
 	
 	glBegin(GL_POLYGON);
 		glVertex3f(80, 17, 0);
@@ -443,7 +495,7 @@ void Draw(void){
 		glVertex3f(5, 100, 0);
 	glEnd();	
 
-	glColor3f(0.8,0.0,0.0);
+	glColor3f(c7,c8,c9);
 	
 	glBegin(GL_POLYGON);
 		glVertex3f(15, 14, 0);
@@ -559,11 +611,10 @@ void Anima(int value){
 	glutTimerFunc(100,Anima, 1);
 }
 
-
-
 void KeyboardReleaseManagement(unsigned char key, int mouseX, int mouseY){
 	if(key == ' ') step = actualStep;
 }
+
 void KeyboardSpaceManagement(unsigned char key, int mouseX, int mouseY){
 	switch(key){
 			case ' ':
@@ -582,8 +633,6 @@ void KeyboardSpaceManagement(unsigned char key, int mouseX, int mouseY){
 				break;	
 		}
 }
-
-
 
 void KeyboardManagement(int key, int mouseX, int mouseY){
 	
@@ -624,6 +673,7 @@ int main(int argc, char **argv){
 	glutSpecialFunc(KeyboardManagement);
 	glutKeyboardFunc(KeyboardSpaceManagement);
 	glutKeyboardUpFunc(KeyboardReleaseManagement);
+	glutMouseFunc(MouseManagement);
 	glutTimerFunc(150, Anima, 1);
 
 	glutMainLoop();
