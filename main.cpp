@@ -32,20 +32,6 @@ FILE *hiScoreFile; 	//FILE TO HIGH SCORE
 int explosionCounter = 0;
 float c1=0.8, c2=0.15, c3=0.15, c4=0.8, c5=0.4, c6=0.4, c7=0.8, c8=0.0, c9=0.0;		// initial console colors
 
-//Configure the window and the viewport
-void Init(void){
-	hiScoreFile = fopen("hiscore", "r");
-	fscanf(hiScoreFile, "%d", &hiScore);
-	glEnable(GL_COLOR_MATERIAL);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	// glEnable(GL_DEPTH_TEST);
-	glShadeModel(GL_SMOOTH);
-	glClearColor(1,1,1,1.0f);
-	glMatrixMode(GL_PROJECTION);
-	gluOrtho2D(0,100.0,0.0,100.0);
-}
-
 void restart(int choice){
 	pX=32,pY=17;
 	wX=27, wY=17;
@@ -76,7 +62,7 @@ void consoleColor(int choice){
 			c1=0.15, c2=0.15, c3=0.8, c4=0.4, c5=0.4, c6=0.8, c7=0.0, c8=0.0, c9=0.8;
 			break;
 		case 3:
-			c1=0.15, c2=0.15, c3=0.8, c4=0.4, c5=0.4, c6=0.8, c7=0.0, c8=0.0, c9=0.8;
+			c1=0.1, c2=0.1, c3=0.1, c4=0.25, c5=0.25, c6=0.25, c7=0.15, c8=0.15, c9=0.15;
 			break;
 	}
 	
@@ -109,14 +95,19 @@ void NewMenu(){
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
-// calls a menu when left button is clicked
-void MouseManagement(int button, int state, int x, int y){
-	if(button == GLUT_LEFT_BUTTON){
-		if(state == GLUT_DOWN)
-			NewMenu();
-	}
-	
-	glutPostRedisplay();
+//Configure the window and the viewport
+void Init(void){
+	hiScoreFile = fopen("hiscore", "r");
+	fscanf(hiScoreFile, "%d", &hiScore);
+	glEnable(GL_COLOR_MATERIAL);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	// glEnable(GL_DEPTH_TEST);
+	glShadeModel(GL_SMOOTH);
+	glClearColor(1,1,1,1.0f);
+	glMatrixMode(GL_PROJECTION);
+	gluOrtho2D(0,100.0,0.0,100.0);
+	NewMenu();
 }
 
 //Text renderer
@@ -192,12 +183,6 @@ void DrawWalls() {
 			glVertex3f(wX+38, wY+14, 0);
 			glVertex3f(wX+34, wY+14, 0);
 		glEnd();
-		// glBegin(GL_LINES);
-		// 	glVertex3f(wX,wY, 0);
-		// 	glVertex3f(wX,wY+3, 0);
-		// 	glVertex3f(wX+32,wY,0);
-		// 	glVertex3f(wX+32,wY+3,0);
-		// glEnd();
 		
 		wY+=20;	
 	}
@@ -596,7 +581,7 @@ void Anima(int value){
 			if(tAY[i] <= -85){
 				int al = rand()%2;
 				aX[i] = al?32:47;
-				tAY[i] = 40-step;
+				tAY[i] += 125-step;
 			} else 
 				tAY[i] = tAY[i]-step;
 		}
@@ -695,7 +680,6 @@ int main(int argc, char **argv){
 	glutSpecialFunc(KeyboardManagement);
 	glutKeyboardFunc(KeyboardSpaceManagement);
 	glutKeyboardUpFunc(KeyboardReleaseManagement);
-	glutMouseFunc(MouseManagement);
 	glutTimerFunc(150, Anima, 1);
 
 	glutMainLoop();
