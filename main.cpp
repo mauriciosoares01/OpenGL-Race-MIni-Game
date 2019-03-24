@@ -46,6 +46,23 @@ void Init(void){
 	gluOrtho2D(0,100.0,0.0,100.0);
 }
 
+void restart(int choice){
+	pX=32,pY=17;
+	wX=27, wY=17;
+	aX[0]=32, aX[1]=32, aX[2]=47, aY[0]=86, aY[1]=86, aY[2]=86;
+	tWY = 0;
+	tAY[0]=0, tAY[1]=40, tAY[2]=80;
+	step=0.5;	
+	actualStep = 0.5;
+	state=false;
+	counter = 0;
+	score = 0;
+	explosionCounter = 0;
+	c1=0.8, c2=0.15, c3=0.15, c4=0.8, c5=0.4, c6=0.4, c7=0.8, c8=0.0, c9=0.0;
+	
+	glutPostRedisplay();
+}
+
 // change the console color
 void consoleColor(int choice){
 	switch(choice){
@@ -59,7 +76,7 @@ void consoleColor(int choice){
 			c1=0.15, c2=0.15, c3=0.8, c4=0.4, c5=0.4, c6=0.8, c7=0.0, c8=0.0, c9=0.8;
 			break;
 		case 3:
-		
+			c1=0.15, c2=0.15, c3=0.8, c4=0.4, c5=0.4, c6=0.8, c7=0.0, c8=0.0, c9=0.8;
 			break;
 	}
 	
@@ -67,7 +84,9 @@ void consoleColor(int choice){
 }
 
 // just to initialize the menu
-void MainMenu(int choice){}
+void MainMenu(int choice){
+	
+}
 
 // create the menu and submenus for color change
 void NewMenu(){
@@ -80,9 +99,12 @@ void NewMenu(){
     glutAddMenuEntry("Blue",2);
     glutAddMenuEntry("Black",3);
 
+	submenu2=glutCreateMenu(restart);
+	glutAddMenuEntry("Restart",0);
+
 	menu=glutCreateMenu(MainMenu);
 	glutAddSubMenu("Console color",submenu1);
-	glutAddSubMenu("Restart",submenu2);
+	glutAddSubMenu("Options",submenu2);
 	
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
