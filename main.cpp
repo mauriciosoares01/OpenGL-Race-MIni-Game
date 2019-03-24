@@ -10,9 +10,13 @@
 
 float pX=32,pY=17;		// initial player's position
 float wX=27, wY=17;		// initial walls position	
+float aX[3]={32, 32, 32}, aY[3]= {86, 86, 86};		//initial adversary position
 float tWY = 0; 			// initial translation of wall
+float tAY[3] = {0, 40, 80}; 			//initial translation of adversary
 float step=0.5;	
+float actualStep = 0.5;
 bool state=0;			// players crash state
+int counter = 0; 		// Counter to change speed
 
 //Configure the window and the viewport
 void Init(void){
@@ -77,6 +81,62 @@ void DrawWalls() {
 	glPopMatrix();
 }
 
+void DrawAdversaries() {
+	for(int i = 0; i< 3; i++){
+		glPushMatrix();
+			glTranslatef(0, tAY[i], 0);
+			glBegin(GL_POLYGON);
+				glVertex3f(aX[i], aY[i], 0);
+				glVertex3f(aX[i]+4, aY[i], 0);
+				glVertex3f(aX[i]+4, aY[i]+4, 0);
+				glVertex3f(aX[i], aY[i]+4, 0);
+			glEnd();
+			
+			glBegin(GL_POLYGON);
+				glVertex3f(aX[i]+8.6, aY[i], 0);
+				glVertex3f(aX[i]+12.6, aY[i], 0);
+				glVertex3f(aX[i]+12.6, aY[i]+4, 0);
+				glVertex3f(aX[i]+8.6, aY[i]+4, 0);
+			glEnd();
+			
+			glBegin(GL_POLYGON);
+				glVertex3f(aX[i]+4.3, aY[i]+4.3, 0);
+				glVertex3f(aX[i]+8.3, aY[i]+4.3, 0);
+				glVertex3f(aX[i]+8.3, aY[i]+8.3, 0);
+				glVertex3f(aX[i]+4.3, aY[i]+8.3, 0);
+			glEnd();
+
+			glBegin(GL_POLYGON);
+				glVertex3f(aX[i], aY[i]+8.6, 0);
+				glVertex3f(aX[i]+4, aY[i]+8.6, 0);
+				glVertex3f(aX[i]+4, aY[i]+12.6, 0);
+				glVertex3f(aX[i], aY[i]+12.6, 0);
+			glEnd();
+			
+			glBegin(GL_POLYGON);
+				glVertex3f(aX[i]+4.3, aY[i]+8.6, 0);
+				glVertex3f(aX[i]+8.3, aY[i]+8.6, 0);
+				glVertex3f(aX[i]+8.3, aY[i]+12.6, 0);
+				glVertex3f(aX[i]+4.3, aY[i]+12.6, 0);
+			glEnd();
+			
+			glBegin(GL_POLYGON);
+				glVertex3f(aX[i]+8.6, aY[i]+8.6, 0);
+				glVertex3f(aX[i]+12.6, aY[i]+8.6, 0);
+				glVertex3f(aX[i]+12.6, aY[i]+12.6, 0);
+				glVertex3f(aX[i]+8.6, aY[i]+12.6, 0);
+			glEnd();
+			
+			glBegin(GL_POLYGON);
+				glVertex3f(aX[i]+4.3, aY[i]+12.9, 0);
+				glVertex3f(aX[i]+8.3, aY[i]+12.9, 0);
+				glVertex3f(aX[i]+8.3, aY[i]+16.9, 0);
+				glVertex3f(aX[i]+4.3, aY[i]+16.9, 0);
+			glEnd();
+		glPopMatrix();
+	}
+}
+
 //Draw the player and the console
 void Draw(void){
 	glMatrixMode(GL_MODELVIEW);
@@ -111,7 +171,7 @@ void Draw(void){
 	glEnd();
 	
 	DrawWalls();
-
+	DrawAdversaries();
 // player
 
 	glBegin(GL_POLYGON);
@@ -262,14 +322,30 @@ void Draw(void){
 void Anima(int value)
 {
 	
-	tWY = tWY <= -20 ? -0.5 : tWY-step;
-	
+	tWY = tWY <= -20 ? -step : tWY-step;
+	for(int i = 0; i< 3; i++){
+		if(tAY[i] <= -85){
+			int al = rand()%2;
+			aX[i] = al?32:47;
+			printf("al: %i\n", al);
+			tAY[i] = 40-step;
+		} else 
+			tAY[i] = tAY[i]-step;
+	}
+		
+	if(counter++> 50){
+		counter = 0;
+		actualStep += 0.2;
+	}
 
 	// Redesenha a casinha em outra posição
 	glutPostRedisplay();
 	glutTimerFunc(100,Anima, 1);
 }
-
+void KeyboardReleaseManagement(unsigned char key, int mouseX, int mouseY){
+	printf("HEY JUDE\n");
+	if(key == GLUT_KEY_UP) step = actualStep;
+}
 void KeyboardManagement(int key, int mouseX, int mouseY){
 	
 	if(state!=1){
@@ -285,7 +361,7 @@ void KeyboardManagement(int key, int mouseX, int mouseY){
 
 				break;
 			case GLUT_KEY_UP:
-				
+				step = 10;
 				break;
 			default:
 				break;	
@@ -307,6 +383,7 @@ int main(int argc, char **argv){
 	Init();
 	glutDisplayFunc(Draw);
 	glutSpecialFunc(KeyboardManagement);
+	glutKeyboardUpFunc(KeyboardReleaseManagement);
 glutTimerFunc(150, Anima, 1);
 	glutMainLoop();
 }
