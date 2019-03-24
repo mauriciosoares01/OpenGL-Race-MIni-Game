@@ -19,7 +19,7 @@
 
 float pX=32,pY=17;		// initial player's position
 float wX=27, wY=17;		// initial walls position	
-float aX[3]={32, 32, 32}, aY[3]= {86, 86, 86};		//initial adversary position
+float aX[3]={32, 32, 47}, aY[3]= {86, 86, 86};		//initial adversary position
 float tWY = 0; 			// initial translation of wall
 float tAY[3] = {0, 40, 80}; 			//initial translation of adversary
 float step=0.5;	
@@ -29,6 +29,7 @@ int counter = 0; 		// Counter to change speed
 int score = 0;			//initial score
 int hiScore;
 FILE *hiScoreFile; 	//FILE TO HIGH SCORE
+int explosionCounter = 0;
 
 //Configure the window and the viewport
 void Init(void){
@@ -185,43 +186,117 @@ void DrawAdversaries() {
 	}
 }
 
-//Draw the player and the console
-void Draw(void){
-	glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-	glClear(GL_COLOR_BUFFER_BIT);
-	lightning();
-	glColor3f(0.5,0.7,0.6);
-
-// background
-	glBegin(GL_POLYGON);
-		glVertex3f(20, 0, 0);
-		glVertex3f(80, 0, 0);
-		glVertex3f(80, 100, 0);
-		glVertex3f(20, 100, 0);
-	glEnd();
-
-// division lines
-	glColor3f(0.15,0.15,0.15);
+void DrawExplosion(int level){
+	switch (level)
+	{
+		case 3:
+			glBegin(GL_POLYGON);
+				glVertex3f(pX+5, pY, 0);
+				glVertex3f(pX+9, pY, 0);
+				glVertex3f(pX+9, pY+4, 0);
+				glVertex3f(pX+5, pY+4, 0);
+			glEnd();
+			glBegin(GL_POLYGON);
+				glVertex3f(pX+10, pY, 0);
+				glVertex3f(pX+14, pY, 0);
+				glVertex3f(pX+14, pY+4, 0);
+				glVertex3f(pX+10, pY+4, 0);
+			glEnd();
+			glBegin(GL_POLYGON);
+				glVertex3f(pX+5, pY+15, 0);
+				glVertex3f(pX+9, pY+15, 0);
+				glVertex3f(pX+9, pY+19, 0);
+				glVertex3f(pX+5, pY+19, 0);
+			glEnd();
+			glBegin(GL_POLYGON);
+				glVertex3f(pX+10, pY+15, 0);
+				glVertex3f(pX+14, pY+15, 0);
+				glVertex3f(pX+14, pY+19, 0);
+				glVertex3f(pX+10, pY+19, 0);
+			glEnd();
+			glBegin(GL_POLYGON);
+				glVertex3f(pX, pY+5, 0);
+				glVertex3f(pX+4, pY+5, 0);
+				glVertex3f(pX+4, pY+9, 0);
+				glVertex3f(pX, pY+9, 0);
+			glEnd();
+			glBegin(GL_POLYGON);
+				glVertex3f(pX, pY+10, 0);
+				glVertex3f(pX+4, pY+10, 0);
+				glVertex3f(pX+4, pY+14, 0);
+				glVertex3f(pX, pY+14, 0);
+			glEnd();
+			glBegin(GL_POLYGON);
+				glVertex3f(pX+15, pY+5, 0);
+				glVertex3f(pX+19, pY+5, 0);
+				glVertex3f(pX+19, pY+9, 0);
+				glVertex3f(pX+15, pY+9, 0);
+			glEnd();
+			glBegin(GL_POLYGON);
+				glVertex3f(pX+15, pY+10, 0);
+				glVertex3f(pX+19, pY+10, 0);
+				glVertex3f(pX+19, pY+14, 0);
+				glVertex3f(pX+15, pY+14, 0);
+			glEnd();
+			break;
+		case 2:
+			glBegin(GL_POLYGON);
+				glVertex3f(pX, pY, 0);
+				glVertex3f(pX+4, pY, 0);
+				glVertex3f(pX+4, pY+4, 0);
+				glVertex3f(pX, pY+4, 0);
+			glEnd();
+			glBegin(GL_POLYGON);
+				glVertex3f(pX+15, pY, 0);
+				glVertex3f(pX+19, pY, 0);
+				glVertex3f(pX+19, pY+4, 0);
+				glVertex3f(pX+15, pY+4, 0);
+			glEnd();
+			glBegin(GL_POLYGON);
+				glVertex3f(pX+15, pY+15, 0);
+				glVertex3f(pX+19, pY+15, 0);
+				glVertex3f(pX+19, pY+19, 0);
+				glVertex3f(pX+15, pY+19, 0);
+			glEnd();
+			glBegin(GL_POLYGON);
+				glVertex3f(pX, pY+15, 0);
+				glVertex3f(pX+4, pY+15, 0);
+				glVertex3f(pX+4, pY+19, 0);
+				glVertex3f(pX, pY+19, 0);
+			glEnd();
+		case 1:
+			glBegin(GL_POLYGON);
+				glVertex3f(pX+5, pY+5, 0);
+				glVertex3f(pX+9, pY+5, 0);
+				glVertex3f(pX+9, pY+9, 0);
+				glVertex3f(pX+5, pY+9, 0);
+			glEnd();
+			glBegin(GL_POLYGON);
+				glVertex3f(pX+10, pY+5, 0);
+				glVertex3f(pX+14, pY+5, 0);
+				glVertex3f(pX+14, pY+9, 0);
+				glVertex3f(pX+10, pY+9, 0);
+			glEnd();
+			glBegin(GL_POLYGON);
+				glVertex3f(pX+5, pY+10, 0);
+				glVertex3f(pX+9, pY+10, 0);
+				glVertex3f(pX+9, pY+14, 0);
+				glVertex3f(pX+5, pY+14, 0);
+			glEnd();
+			glBegin(GL_POLYGON);
+				glVertex3f(pX+10, pY+10, 0);
+				glVertex3f(pX+14, pY+10, 0);
+				glVertex3f(pX+14, pY+14, 0);
+				glVertex3f(pX+10, pY+14, 0);
+			glEnd();
+			break;
 	
-	glBegin(GL_POLYGON);
-		glVertex3f(66, 0, 0);
-		glVertex3f(67, 0, 0);
-		glVertex3f(67, 100, 0);
-		glVertex3f(66, 100, 0);
-	glEnd();
+		default:
+			break;
+	}
+}
 
-	glBegin(GL_POLYGON);
-		glVertex3f(25, 0, 0);
-		glVertex3f(26, 0, 0);
-		glVertex3f(26, 100, 0);
-		glVertex3f(25, 100, 0);
-	glEnd();
-	
-	DrawWalls();
-	DrawAdversaries();
-// player
-
+void DrawPlayer() {
 	glBegin(GL_POLYGON);
 		glVertex3f(pX, pY, 0);
 		glVertex3f(pX+4, pY, 0);
@@ -270,6 +345,48 @@ void Draw(void){
 		glVertex3f(pX+8.3, pY+16.9, 0);
 		glVertex3f(pX+4.3, pY+16.9, 0);
 	glEnd();
+}
+
+//Draw  the console
+void Draw(void){
+	glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+	glClear(GL_COLOR_BUFFER_BIT);
+	lightning();
+	glColor3f(0.5,0.7,0.6);
+
+// background
+	glBegin(GL_POLYGON);
+		glVertex3f(20, 0, 0);
+		glVertex3f(80, 0, 0);
+		glVertex3f(80, 100, 0);
+		glVertex3f(20, 100, 0);
+	glEnd();
+
+// division lines
+	glColor3f(0.15,0.15,0.15);
+	
+	glBegin(GL_POLYGON);
+		glVertex3f(66, 0, 0);
+		glVertex3f(67, 0, 0);
+		glVertex3f(67, 100, 0);
+		glVertex3f(66, 100, 0);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+		glVertex3f(25, 0, 0);
+		glVertex3f(26, 0, 0);
+		glVertex3f(26, 100, 0);
+		glVertex3f(25, 100, 0);
+	glEnd();
+	
+	DrawWalls();
+	DrawAdversaries();
+// player
+	if(!state)
+		DrawPlayer();
+	else
+		DrawExplosion((explosionCounter%3)+1);
 	
 //	borders
 	glColor3f(0.8,0.15,0.15);
@@ -417,6 +534,21 @@ void Anima(int value){
 		score += 2*step;
 		checkCollision();
 	} else {
+		if(explosionCounter++ >= 15){
+			explosionCounter = 0;
+			state = false;
+			score =0;
+			hiScoreFile = fopen("hiscore", "r");
+			fscanf(hiScoreFile, "%d", &hiScore);
+			tWY = 0;
+			tAY[0] =0;
+			tAY[1] = 40;
+			tAY[2] = 80;
+			counter =0;
+			actualStep = 0.5;
+			explosionCounter = 0;
+			
+		}
 		if(score > hiScore){
 			hiScoreFile = fopen("hiscore", "w");
 			fprintf(hiScoreFile, "%d", score);
