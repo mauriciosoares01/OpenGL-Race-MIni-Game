@@ -1,6 +1,12 @@
-/**************************
-
- **************************
+/*******************************************
+*
+*	A mini race game using OpenGL
+*
+*	Authors: (on github) /mauriciosoares01
+*						 /joaopedrofn
+*						 /Talita1996
+*
+ *******************************************
 */
 
 #include <stdlib.h>
@@ -17,7 +23,7 @@ float tWY = 0; 			// initial translation of wall
 float tAY[3] = {0, 40, 80}; 			//initial translation of adversary
 float step=0.5;	
 float actualStep = 0.5;
-bool state=0;			// players crash state
+bool state=false;			// players crash state
 int counter = 0; 		// Counter to change speed
 int score = 0;			//initial score
 
@@ -370,8 +376,7 @@ void Draw(void){
 	glFlush();
 }
 
-void Anima(int value)
-{
+void Anima(int value){
 	
 	tWY = tWY <= -20 ? -step : tWY-step;
 	for(int i = 0; i< 3; i++){
@@ -387,13 +392,28 @@ void Anima(int value)
 		counter = 0;
 		actualStep += 0.2;
 	}
-
 	score += 2*step;
-
 	// Redesenha a casinha em outra posição
 	glutPostRedisplay();
 	glutTimerFunc(100,Anima, 1);
 }
+
+// verifies the collision	checkCollision(playerPosX,enemyVectorX,enemyVectorY)
+void checkCollision(){
+	
+	int i=0;
+	for (i=0;i<3;i++){
+		if(((aY[i]-tAY[i]) < 17) && (aX[i]==pX)){
+			state = true;
+			printf("bateu\n");
+		}else{
+			printf("vida que segue\n");
+			state = false;
+		}
+	}
+
+}
+
 void KeyboardReleaseManagement(unsigned char key, int mouseX, int mouseY){
 	if(key == ' ') step = actualStep;
 }
@@ -415,9 +435,12 @@ void KeyboardSpaceManagement(unsigned char key, int mouseX, int mouseY){
 				break;	
 		}
 }
+
+
+
 void KeyboardManagement(int key, int mouseX, int mouseY){
 	
-	if(state!=1){
+	if(state!=true){
 		// change player side when a directional is key pressed
 		switch(key){
 			case GLUT_KEY_RIGHT:
@@ -454,7 +477,8 @@ int main(int argc, char **argv){
 	glutSpecialFunc(KeyboardManagement);
 	glutKeyboardFunc(KeyboardSpaceManagement);
 	glutKeyboardUpFunc(KeyboardReleaseManagement);
-glutTimerFunc(150, Anima, 1);
+	glutTimerFunc(150, Anima, 1);
+
 	glutMainLoop();
 }
 
