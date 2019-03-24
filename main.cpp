@@ -327,7 +327,6 @@ void Anima(int value)
 		if(tAY[i] <= -85){
 			int al = rand()%2;
 			aX[i] = al?32:47;
-			printf("al: %i\n", al);
 			tAY[i] = 40-step;
 		} else 
 			tAY[i] = tAY[i]-step;
@@ -343,8 +342,10 @@ void Anima(int value)
 	glutTimerFunc(100,Anima, 1);
 }
 void KeyboardReleaseManagement(unsigned char key, int mouseX, int mouseY){
-	printf("HEY JUDE\n");
-	if(key == GLUT_KEY_UP) step = actualStep;
+	if(key == ' ') step = actualStep;
+}
+void KeyboardSpaceManagement(unsigned char key, int mouseX, int mouseY){
+	if(key == ' ') step = 10;
 }
 void KeyboardManagement(int key, int mouseX, int mouseY){
 	
@@ -361,7 +362,7 @@ void KeyboardManagement(int key, int mouseX, int mouseY){
 
 				break;
 			case GLUT_KEY_UP:
-				step = 10;
+				
 				break;
 			default:
 				break;	
@@ -383,6 +384,7 @@ int main(int argc, char **argv){
 	Init();
 	glutDisplayFunc(Draw);
 	glutSpecialFunc(KeyboardManagement);
+	glutKeyboardFunc(KeyboardSpaceManagement);
 	glutKeyboardUpFunc(KeyboardReleaseManagement);
 glutTimerFunc(150, Anima, 1);
 	glutMainLoop();
