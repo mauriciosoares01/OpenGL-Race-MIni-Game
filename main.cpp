@@ -20,9 +20,35 @@ int counter = 0; 		// Counter to change speed
 
 //Configure the window and the viewport
 void Init(void){
+	glEnable(GL_COLOR_MATERIAL);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	// glEnable(GL_DEPTH_TEST);
+	glShadeModel(GL_SMOOTH);
 	glClearColor(1,1,1,1.0f);
 	glMatrixMode(GL_PROJECTION);
 	gluOrtho2D(0,100.0,0.0,100.0);
+}
+
+void lightning() {
+	GLfloat luzAmbiente[4]={0.2,0.2,0.2,1.0};
+	GLfloat luzDifusa[4]={0.7,0.7,0.7,1.0}; // "cor"
+	GLfloat luzEspecular[4]={0.2, 0.2, 0.2, 0.2};// "brilho"
+	GLfloat posicaoLuz[4]={40.0, 60.0, 50.0, 1};
+	// Capacidade de brilho do material
+	GLfloat especularidade[4]={1.0,1.0,1.0,1.0};
+	GLint especMaterial = 60;
+	// Define a refletância do material
+	glMaterialfv(GL_FRONT,GL_SPECULAR, especularidade);
+	// Define a concentração do brilho
+	glMateriali(GL_FRONT,GL_SHININESS,especMaterial);
+	// Ativa o uso da luz ambiente
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
+	// Define os parâmetros da luz de número 0
+	glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa );
+	glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular );
+	glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz ); 
 }
 
 void DrawWalls() {
@@ -142,7 +168,7 @@ void Draw(void){
 	glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 	glClear(GL_COLOR_BUFFER_BIT);
-	
+	lightning();
 	glColor3f(0.5,0.7,0.6);
 
 // background
