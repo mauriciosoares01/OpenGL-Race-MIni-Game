@@ -4,8 +4,10 @@
 */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <GL/glut.h>
 #include <iostream>
+#include <cstring>
 
 
 float pX=32,pY=17;		// initial player's position
@@ -17,6 +19,7 @@ float step=0.5;
 float actualStep = 0.5;
 bool state=0;			// players crash state
 int counter = 0; 		// Counter to change speed
+int score = 0;			//initial score
 
 //Configure the window and the viewport
 void Init(void){
@@ -28,6 +31,14 @@ void Init(void){
 	glClearColor(1,1,1,1.0f);
 	glMatrixMode(GL_PROJECTION);
 	gluOrtho2D(0,100.0,0.0,100.0);
+}
+
+//Text renderer
+void print_text(const char *text, float x, float y){
+	glRasterPos2f(x , y);
+	for(int i = 0; i < strlen(text); i++){
+		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, text[i]);
+	}
 }
 
 void lightning() {
@@ -341,6 +352,20 @@ void Draw(void){
 		glVertex2f(87.2, 12);
 	glEnd();
 	
+
+	//TEXTS
+	glColor3f(0.15,0.15,0.15);
+	print_text("SCORE: ", 67.5, 80);
+	char scoreStr[10];
+	snprintf(scoreStr, sizeof(scoreStr), "%d", score);
+	print_text(scoreStr, 67.5, 78);
+
+	print_text("SPEED: ", 67.5, 70);
+	char speed[10];
+	snprintf(speed, sizeof(speed), "%.1lf", (actualStep*10)/5);
+	print_text(speed, 67.5, 68);
+	
+
 	
 	glFlush();
 }
@@ -362,6 +387,8 @@ void Anima(int value)
 		counter = 0;
 		actualStep += 0.2;
 	}
+
+	score += 2*step;
 
 	// Redesenha a casinha em outra posição
 	glutPostRedisplay();
