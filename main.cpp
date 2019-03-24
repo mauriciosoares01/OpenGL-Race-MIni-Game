@@ -345,7 +345,22 @@ void KeyboardReleaseManagement(unsigned char key, int mouseX, int mouseY){
 	if(key == ' ') step = actualStep;
 }
 void KeyboardSpaceManagement(unsigned char key, int mouseX, int mouseY){
-	if(key == ' ') step = 10;
+	switch(key){
+			case ' ':
+				step = 10;
+				break;
+			case 'a':
+				pX = 32;
+				break;
+			case 27:
+				exit(0);
+				break;
+			case 'd':
+				pX = 47;
+				break;
+			default:
+				break;	
+		}
 }
 void KeyboardManagement(int key, int mouseX, int mouseY){
 	
