@@ -14,6 +14,7 @@
 #include <GL/glut.h>
 #include <iostream>
 #include <cstring>
+#include <fstream>
 
 
 float pX=32,pY=17;		// initial player's position
@@ -26,9 +27,13 @@ float actualStep = 0.5;
 bool state=false;			// players crash state
 int counter = 0; 		// Counter to change speed
 int score = 0;			//initial score
+int hiScore;
+FILE *hiScoreFile; 	//FILE TO HIGH SCORE
 
 //Configure the window and the viewport
 void Init(void){
+	hiScoreFile = fopen("hiscore", "r");
+	fscanf(hiScoreFile, "%d", &hiScore);
 	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
@@ -361,15 +366,19 @@ void Draw(void){
 
 	//TEXTS
 	glColor3f(0.15,0.15,0.15);
-	print_text("SCORE: ", 67.5, 80);
+	print_text("HI-SCORE: ", 67.5, 78);
+	char hiScoreStr[10];
+	snprintf(hiScoreStr, sizeof(hiScoreStr), "%d", hiScore);
+	print_text(hiScoreStr, 67.5, 76);
+	print_text("SCORE: ", 67.5, 70);
 	char scoreStr[10];
 	snprintf(scoreStr, sizeof(scoreStr), "%d", score);
-	print_text(scoreStr, 67.5, 78);
+	print_text(scoreStr, 67.5, 68);
 
-	print_text("SPEED: ", 67.5, 70);
+	print_text("SPEED: ", 67.5, 60);
 	char speed[10];
 	snprintf(speed, sizeof(speed), "%.1lf", (actualStep*10)/5);
-	print_text(speed, 67.5, 68);
+	print_text(speed, 67.5, 58);
 	
 
 	
@@ -407,6 +416,11 @@ void Anima(int value){
 		}
 		score += 2*step;
 		checkCollision();
+	} else {
+		if(score > hiScore){
+			hiScoreFile = fopen("hiscore", "w");
+			fprintf(hiScoreFile, "%d", score);
+		}
 	}
 	// Redesenha a casinha em outra posição
 	glutPostRedisplay();
